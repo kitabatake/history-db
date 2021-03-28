@@ -1,0 +1,17 @@
+version: "3"
+services:
+  db:
+    image: postgres:11-alpine
+    container_name: history_db_postgresql
+    environment:
+      POSTGRES_USER: history_db_user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: history_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data:delegated
+
+volumes:
+  db_data:
+
