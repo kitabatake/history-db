@@ -1,6 +1,5 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { Person } from '../models/person.model';
-import { CreatePersonArgs } from '../gql_args/create_person.args';
 import { PersonService } from '../person.service';
 
 @Resolver()
@@ -14,8 +13,10 @@ export class PersonResolver {
   }
 
   @Mutation((returns) => Person)
-  async createPerson(@Args() createPersonArgs: CreatePersonArgs) {
-    const { name, description } = createPersonArgs;
+  async createPerson(
+    @Args({ name: 'name' }) name: string,
+    @Args({ name: 'description' }) description: string,
+  ) {
     return this.personService.createPerson({
       name: name,
       description: description,
