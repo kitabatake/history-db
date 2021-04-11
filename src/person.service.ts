@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
-import { Person, Prisma } from '@prisma/client';
+import { Person, PersonRelation, Prisma } from '@prisma/client';
 
 @Injectable()
 export class PersonService {
@@ -23,8 +23,22 @@ export class PersonService {
     });
   }
 
+  async findById(id: number): Promise<Person> {
+    return this.prisma.person.findUnique({
+      where: { id: id },
+    });
+  }
+
   async createPerson(data: Prisma.PersonCreateInput): Promise<Person> {
     return this.prisma.person.create({
+      data,
+    });
+  }
+
+  async createPersonRelation(
+    data: Prisma.PersonRelationCreateInput,
+  ): Promise<PersonRelation> {
+    return this.prisma.personRelation.create({
       data,
     });
   }

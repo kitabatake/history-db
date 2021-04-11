@@ -15,3 +15,10 @@ model Person {
     name String
     description String?
 }
+
+model PersonRelation {
+    id    Int     @default(autoincrement()) @id
+    from Int
+    to Int
+    description String
+}
