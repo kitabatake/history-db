@@ -14,11 +14,15 @@ model Person {
     id    Int     @default(autoincrement()) @id
     name String
     description String?
+    fromRelations PersonRelation[] @relation("fromPerson")
+    toRelations PersonRelation[] @relation("toPerson")
 }
 
 model PersonRelation {
     id    Int     @default(autoincrement()) @id
-    from Int
-    to Int
+    from_id Int
+    from Person @relation("fromPerson", fields: [from_id], references: [id])
+    to_id Int
+    to Person @relation("toPerson", fields: [to_id], references: [id])
     description String
 }

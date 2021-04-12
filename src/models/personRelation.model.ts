@@ -6,10 +6,10 @@ export class PersonRelation {
   @Field((type) => Int)
   id: number;
 
-  @Field()
+  @Field(() => Person)
   from: Person;
 
-  @Field()
+  @Field(() => Person)
   to: Person;
 
   @Field()

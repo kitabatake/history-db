@@ -34,12 +34,4 @@ export class PersonService {
       data,
     });
   }
-
-  async createPersonRelation(
-    data: Prisma.PersonRelationCreateInput,
-  ): Promise<PersonRelation> {
-    return this.prisma.personRelation.create({
-      data,
-    });
-  }
 }
