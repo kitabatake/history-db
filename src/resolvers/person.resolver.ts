@@ -5,36 +5,57 @@ import {
   Args,
   Parent,
   Int,
-  Field,
+  ResolveField,
 } from '@nestjs/graphql';
 import { Person } from '../models/person.model';
 import { PersonService } from '../person.service';
 import { PersonRelation } from '../models/personRelation.model';
 import { PrismaService } from '../prisma.service';
 
-@Resolver((of) => Person)
+@Resolver(() => Person)
 export class PersonResolver {
   constructor(
     private personService: PersonService,
     private prisma: PrismaService,
   ) {}
 
-  @Query((returns) => [Person])
+  @Query(() => [Person])
   async persons() {
     return this.personService.persons({});
   }
 
-  @Query((returns) => Person)
+  @Query(() => Person)
   async person(@Args('id', { type: () => Int }) id: number) {
     return this.personService.findById(id);
   }
 
-  // @Field((returns) => [PersonRelation])
-  // async relationsFrom(@Parent() person: Person) {
-  //   return person.relationsFrom;
-  // }
+  @ResolveField(() => [PersonRelation])
+  async relationsFrom(@Parent() person: Person) {
+    return await this.prisma.personRelation.findMany({
+      where: {
+        from_id: person.id,
+      },
+      include: {
+        to: true,
+        from: true,
+      },
+    });
+  }
 
-  @Mutation((returns) => Person)
+  @ResolveField(() => [PersonRelation])
+  async relationsTo(@Parent() person: Person) {
+    return await this.prisma.personRelation.findMany({
+      where: {
+        to_id: person.id,
+      },
+      include: {
+        to: true,
+        from: true,
+      },
+    });
+  }
+
+  @Mutation(() => Person)
   async createPerson(
     @Args({ name: 'name' }) name: string,
     @Args({ name: 'description' }) description: string,
@@ -45,12 +66,11 @@ export class PersonResolver {
     });
   }
 
-  @Mutation((returns) => PersonRelation)
+  @Mutation(() => PersonRelation)
   async createRelation(
     @Args({ name: 'from_person_id', type: () => Int }) from_person_id: number,
     @Args({ name: 'to_person_id', type: () => Int }) to_person_id: number,
     @Args({ name: 'description' }) description: string,
-    @Parent() from: Person,
   ) {
     await this.prisma.person.update({
       where: {
