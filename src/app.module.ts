@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { AppController } from './app.controller';
-import { PersonService } from './person.service';
 import { PrismaService } from './prisma.service';
 import { PersonResolver } from './resolvers/person.resolver';
 
@@ -14,6 +13,6 @@ import { PersonResolver } from './resolvers/person.resolver';
     }),
   ],
   controllers: [AppController],
-  providers: [PrismaService, PersonService, PersonResolver],
+  providers: [PrismaService, PersonResolver],
 })
 export class AppModule {}

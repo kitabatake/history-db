@@ -8,25 +8,25 @@ import {
   ResolveField,
 } from '@nestjs/graphql';
 import { Person } from '../models/person.model';
-import { PersonService } from '../person.service';
 import { PersonRelation } from '../models/personRelation.model';
 import { PrismaService } from '../prisma.service';
 
 @Resolver(() => Person)
 export class PersonResolver {
-  constructor(
-    private personService: PersonService,
-    private prisma: PrismaService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   @Query(() => [Person])
   async persons() {
-    return this.personService.persons({});
+    return this.prisma.person.findMany();
   }
 
   @Query(() => Person)
   async person(@Args('id', { type: () => Int }) id: number) {
-    return this.personService.findById(id);
+    return this.prisma.person.findUnique({
+      where: {
+        id: id,
+      },
+    });
   }
 
   @ResolveField(() => [PersonRelation])
@@ -60,9 +60,11 @@ export class PersonResolver {
     @Args({ name: 'name' }) name: string,
     @Args({ name: 'description' }) description: string,
   ) {
-    return this.personService.createPerson({
-      name: name,
-      description: description,
+    return this.prisma.person.create({
+      data: {
+        name: name,
+        description: description,
+      },
     });
   }
 
