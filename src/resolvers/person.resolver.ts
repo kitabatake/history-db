@@ -30,28 +30,30 @@ export class PersonResolver {
   }
 
   @ResolveField(() => [PersonRelation])
-  async relationsFrom(@Parent() person: Person) {
-    return await this.prisma.personRelation.findMany({
+  async relations(@Parent() person: Person) {
+    const relations = await this.prisma.personRelation.findMany({
       where: {
-        from_id: person.id,
+        persons: {
+          some: {
+            person_id: person.id,
+          },
+        },
       },
       include: {
-        to: true,
-        from: true,
+        persons: true,
       },
     });
-  }
-
-  @ResolveField(() => [PersonRelation])
-  async relationsTo(@Parent() person: Person) {
-    return await this.prisma.personRelation.findMany({
-      where: {
-        to_id: person.id,
-      },
-      include: {
-        to: true,
-        from: true,
-      },
+    return relations.map((relation) => {
+      return {
+        ...relation,
+        persons: relation.persons.map((person) => {
+          return this.prisma.person.findUnique({
+            where: {
+              id: person.id,
+            },
+          });
+        }),
+      };
     });
   }
 
@@ -70,20 +72,18 @@ export class PersonResolver {
 
   @Mutation(() => PersonRelation)
   async createRelation(
-    @Args({ name: 'from_person_id', type: () => Int }) from_person_id: number,
-    @Args({ name: 'to_person_id', type: () => Int }) to_person_id: number,
+    @Args({ name: 'person_ids', type: () => [Int] }) person_ids: number[],
     @Args({ name: 'description' }) description: string,
   ) {
-    await this.prisma.person.update({
-      where: {
-        id: from_person_id,
-      },
+    return this.prisma.personRelation.create({
       data: {
-        fromRelations: {
-          create: {
-            description: description,
-            to_id: to_person_id,
-          },
+        description: description,
+        persons: {
+          create: person_ids.map((id) => {
+            return {
+              person_id: id,
+            };
+          }),
         },
       },
     });

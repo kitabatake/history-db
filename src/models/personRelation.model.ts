@@ -6,11 +6,8 @@ export class PersonRelation {
   @Field((type) => Int)
   id: number;
 
-  @Field(() => Person)
-  from: Person;
-
-  @Field(() => Person)
-  to: Person;
+  @Field(() => [Person])
+  persons: Person[];
 
   @Field()
   description: string;
