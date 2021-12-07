@@ -10,23 +10,23 @@ import {
 import { Person } from '../models/person.model';
 import { PersonRelation } from '../models/personRelation.model';
 import { PrismaService } from '../prisma.service';
+import { PersonService } from '../person.service';
 
 @Resolver(() => Person)
 export class PersonResolver {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private personService: PersonService,
+  ) {}
 
   @Query(() => [Person])
-  async persons() {
-    return this.prisma.person.findMany();
+  async persons(): Promise<Person[]> {
+    return this.personService.findPersons();
   }
 
   @Query(() => Person)
-  async person(@Args('id', { type: () => Int }) id: number) {
-    return this.prisma.person.findUnique({
-      where: {
-        id: id,
-      },
-    });
+  async person(@Args('id', { type: () => Int }) id: number): Promise<Person> {
+    return this.personService.findPersonById(id);
   }
 
   @ResolveField(() => [PersonRelation])
@@ -43,6 +43,7 @@ export class PersonResolver {
         persons: true,
       },
     });
+
     return relations.map((relation) => {
       return {
         ...relation,
@@ -62,12 +63,7 @@ export class PersonResolver {
     @Args({ name: 'name' }) name: string,
     @Args({ name: 'description' }) description: string,
   ) {
-    return this.prisma.person.create({
-      data: {
-        name: name,
-        description: description,
-      },
-    });
+    return await this.personService.createPerson(name, description);
   }
 
   @Mutation(() => PersonRelation)
@@ -75,17 +71,6 @@ export class PersonResolver {
     @Args({ name: 'person_ids', type: () => [Int] }) person_ids: number[],
     @Args({ name: 'description' }) description: string,
   ) {
-    return this.prisma.personRelation.create({
-      data: {
-        description: description,
-        persons: {
-          create: person_ids.map((id) => {
-            return {
-              person_id: id,
-            };
-          }),
-        },
-      },
-    });
+    return await this.personService.createRelation(person_ids, description);
   }
 }
