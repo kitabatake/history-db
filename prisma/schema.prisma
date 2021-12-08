@@ -20,7 +20,7 @@ model Person {
 model PersonRelation {
     id    Int     @default(autoincrement()) @id
     description String
-    persons PersonRelationPerson[]
+    personRelationPersons PersonRelationPerson[]
 }
 
 model PersonRelationPerson {

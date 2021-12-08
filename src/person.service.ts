@@ -42,7 +42,7 @@ export class PersonService {
     const pPersonRelation = await this.prisma.personRelation.create({
       data: {
         description: description,
-        persons: {
+        personRelationPersons: {
           create: person_ids.map((id) => {
             return {
               person_id: id,
@@ -51,12 +51,12 @@ export class PersonService {
         },
       },
       include: {
-        persons: true,
+        personRelationPersons: true,
       },
     });
 
     const persons: Person[] = [];
-    for (const pPersonRelationPerson of pPersonRelation.persons) {
+    for (const pPersonRelationPerson of pPersonRelation.personRelationPersons) {
       const person = await this.prisma.person.findUnique({
         where: {
           id: pPersonRelationPerson.person_id,

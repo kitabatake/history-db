@@ -33,21 +33,21 @@ export class PersonResolver {
   async relations(@Parent() person: Person) {
     const relations = await this.prisma.personRelation.findMany({
       where: {
-        persons: {
+        personRelationPersons: {
           some: {
             person_id: person.id,
           },
         },
       },
       include: {
-        persons: true,
+        personRelationPersons: true,
       },
     });
 
     return relations.map((relation) => {
       return {
         ...relation,
-        persons: relation.persons.map((person) => {
+        persons: relation.personRelationPersons.map((person) => {
           return this.prisma.person.findUnique({
             where: {
               id: person.id,
