@@ -10,23 +10,23 @@ import {
 import { Person } from '../models/person.model';
 import { PersonRelation } from '../models/personRelation.model';
 import { PrismaService } from '../prisma.service';
-import { PersonService } from '../person.service';
 
 @Resolver(() => Person)
 export class PersonResolver {
-  constructor(
-    private prisma: PrismaService,
-    private personService: PersonService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   @Query(() => [Person])
   async persons(): Promise<Person[]> {
-    return this.personService.findPersons();
+    return this.prisma.person.findMany();
   }
 
   @Query(() => Person)
   async person(@Args('id', { type: () => Int }) id: number): Promise<Person> {
-    return this.personService.findPersonById(id);
+    return this.prisma.person.findUnique({
+      where: {
+        id: id,
+      },
+    });
   }
 
   @ResolveField(() => [PersonRelation])
@@ -63,7 +63,12 @@ export class PersonResolver {
     @Args({ name: 'name' }) name: string,
     @Args({ name: 'description' }) description: string,
   ) {
-    return await this.personService.createPerson(name, description);
+    return this.prisma.person.create({
+      data: {
+        name: name,
+        description: description,
+      },
+    });
   }
 
   @Mutation(() => PersonRelation)
@@ -71,6 +76,20 @@ export class PersonResolver {
     @Args({ name: 'person_ids', type: () => [Int] }) person_ids: number[],
     @Args({ name: 'description' }) description: string,
   ) {
-    return await this.personService.createRelation(person_ids, description);
+    return await this.prisma.personRelation.create({
+      data: {
+        description: description,
+        personRelationPersons: {
+          create: person_ids.map((id) => {
+            return {
+              person_id: id,
+            };
+          }),
+        },
+      },
+      include: {
+        personRelationPersons: true,
+      },
+    });
   }
 }
