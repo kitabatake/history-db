@@ -31,7 +31,7 @@ export class PersonRelationResolver {
     const personRelationPersons = await this.prisma.personRelationPerson.findMany(
       {
         where: {
-          person_relation: personRelation,
+          person_relation_id: personRelation.id,
         },
         include: {
           person: true,
