@@ -10,6 +10,7 @@ import {
 import { Person } from '../models/person.model';
 import { PersonRelation } from '../models/personRelation.model';
 import { PrismaService } from '../prisma.service';
+import { Activity } from '../models/activity.model';
 
 @Resolver(() => Person)
 export class PersonResolver {
@@ -48,6 +49,36 @@ export class PersonResolver {
       return {
         ...relation,
         persons: relation.personRelationPersons.map((person) => {
+          return this.prisma.person.findUnique({
+            where: {
+              id: person.id,
+            },
+          });
+        }),
+      };
+    });
+  }
+
+  @ResolveField(() => [Activity])
+  async activities(@Parent() person: Person) {
+    const activities = await this.prisma.activity.findMany({
+      where: {
+        activityPersons: {
+          some: {
+            person_id: person.id,
+          },
+        },
+      },
+      include: {
+        activityPersons: true,
+        source: true,
+      },
+    });
+
+    return activities.map((activity) => {
+      return {
+        ...activity,
+        persons: activity.activityPersons.map((person) => {
           return this.prisma.person.findUnique({
             where: {
               id: person.id,

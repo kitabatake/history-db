@@ -35,11 +35,14 @@ model PersonRelationPerson {
 model Source {
     id    Int     @default(autoincrement()) @id
     name String
+    activities Activity[]
 }
 
 model Activity {
     id    Int     @default(autoincrement()) @id
     description String?
+    source_id Int?
+    source Source? @relation(fields: [source_id], references: [id])
     activityPersons ActivityPerson[]
 }
 

@@ -1,5 +1,6 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { Person } from './person.model';
+import { Source } from './source.model';
 
 @ObjectType()
 export class Activity {
@@ -8,4 +9,7 @@ export class Activity {
 
   @Field()
   description?: string;
+
+  @Field(() => Source, { nullable: true })
+  source?: Source;
 }
