@@ -14,7 +14,7 @@ model Person {
     id    Int     @default(autoincrement()) @id
     name String
     description String?
-    relations PersonRelationPerson[]
+    personRelationPersons PersonRelationPerson[]
     activityPersons ActivityPerson[]
 }
 
