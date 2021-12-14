@@ -15,6 +15,7 @@ model Person {
     name String
     description String?
     relations PersonRelationPerson[]
+    activityPersons ActivityPerson[]
 }
 
 model PersonRelation {
@@ -27,6 +28,25 @@ model PersonRelationPerson {
     id    Int     @default(autoincrement()) @id
     person_relation_id Int
     person_relation PersonRelation @relation(fields: [person_relation_id], references: [id])
+    person_id Int
+    person Person @relation(fields: [person_id], references: [id])
+}
+
+model Source {
+    id    Int     @default(autoincrement()) @id
+    name String
+}
+
+model Activity {
+    id    Int     @default(autoincrement()) @id
+    description String?
+    activityPersons ActivityPerson[]
+}
+
+model ActivityPerson {
+    id    Int     @default(autoincrement()) @id
+    activity_id Int
+    activity Activity @relation(fields: [activity_id], references: [id])
     person_id Int
     person Person @relation(fields: [person_id], references: [id])
 }
