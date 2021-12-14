@@ -5,6 +5,7 @@ import { PrismaService } from './prisma.service';
 import { PersonResolver } from './resolvers/person.resolver';
 import { PersonRelationResolver } from './resolvers/personRelation.resolver';
 import { SourceResolver } from './resolvers/source.resolver';
+import { ActivityResolver } from './resolvers/activity.resolver';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { SourceResolver } from './resolvers/source.resolver';
     PersonResolver,
     PersonRelationResolver,
     SourceResolver,
+    ActivityResolver,
   ],
 })
 export class AppModule {}
