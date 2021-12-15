@@ -42,9 +42,6 @@ export class PersonRelationResolver {
           }),
         },
       },
-      include: {
-        personRelationPersons: true,
-      },
     });
   }
 

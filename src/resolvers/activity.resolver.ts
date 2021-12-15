@@ -1,4 +1,12 @@
-import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Int,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { PrismaService } from '../prisma.service';
 import { Activity } from '../models/activity.model';
 import { Person } from '../models/person.model';
@@ -45,9 +53,19 @@ export class ActivityResolver {
           }),
         },
       },
+    });
+  }
+
+  @ResolveField(() => [Person])
+  async persons(@Parent() activity: Activity) {
+    const activityPersons = await this.prisma.activityPerson.findMany({
+      where: {
+        activity_id: activity.id,
+      },
       include: {
-        activityPersons: true,
+        person: true,
       },
     });
+    return activityPersons.map((activityPerson) => activityPerson.person);
   }
 }

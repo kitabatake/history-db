@@ -32,7 +32,7 @@ export class PersonResolver {
 
   @ResolveField(() => [PersonRelation])
   async relations(@Parent() person: Person) {
-    const relations = await this.prisma.personRelation.findMany({
+    return await this.prisma.personRelation.findMany({
       where: {
         personRelationPersons: {
           some: {
@@ -44,24 +44,11 @@ export class PersonResolver {
         personRelationPersons: true,
       },
     });
-
-    return relations.map((relation) => {
-      return {
-        ...relation,
-        persons: relation.personRelationPersons.map((person) => {
-          return this.prisma.person.findUnique({
-            where: {
-              id: person.id,
-            },
-          });
-        }),
-      };
-    });
   }
 
   @ResolveField(() => [Activity])
   async activities(@Parent() person: Person) {
-    const activities = await this.prisma.activity.findMany({
+    return await this.prisma.activity.findMany({
       where: {
         activityPersons: {
           some: {
@@ -73,19 +60,6 @@ export class PersonResolver {
         activityPersons: true,
         source: true,
       },
-    });
-
-    return activities.map((activity) => {
-      return {
-        ...activity,
-        persons: activity.activityPersons.map((person) => {
-          return this.prisma.person.findUnique({
-            where: {
-              id: person.id,
-            },
-          });
-        }),
-      };
     });
   }
 
