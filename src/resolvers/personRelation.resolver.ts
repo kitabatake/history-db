@@ -26,6 +26,28 @@ export class PersonRelationResolver {
     });
   }
 
+  @Mutation(() => PersonRelation)
+  async createPersonRelation(
+    @Args({ name: 'person_ids', type: () => [Int] }) person_ids: number[],
+    @Args({ name: 'description' }) description: string,
+  ) {
+    return await this.prisma.personRelation.create({
+      data: {
+        description: description,
+        personRelationPersons: {
+          create: person_ids.map((id) => {
+            return {
+              person_id: id,
+            };
+          }),
+        },
+      },
+      include: {
+        personRelationPersons: true,
+      },
+    });
+  }
+
   @ResolveField(() => [Person])
   async persons(@Parent() personRelation: PersonRelation) {
     const personRelationPersons = await this.prisma.personRelationPerson.findMany(

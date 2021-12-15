@@ -101,26 +101,4 @@ export class PersonResolver {
       },
     });
   }
-
-  @Mutation(() => PersonRelation)
-  async createRelation(
-    @Args({ name: 'person_ids', type: () => [Int] }) person_ids: number[],
-    @Args({ name: 'description' }) description: string,
-  ) {
-    return await this.prisma.personRelation.create({
-      data: {
-        description: description,
-        personRelationPersons: {
-          create: person_ids.map((id) => {
-            return {
-              person_id: id,
-            };
-          }),
-        },
-      },
-      include: {
-        personRelationPersons: true,
-      },
-    });
-  }
 }
