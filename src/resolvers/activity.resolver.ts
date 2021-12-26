@@ -10,6 +10,7 @@ import {
 import { PrismaService } from '../prisma.service';
 import { Activity } from '../models/activity.model';
 import { Person } from '../models/person.model';
+import { Source } from '../models/source.model';
 
 @Resolver(() => Activity)
 export class ActivityResolver {
@@ -29,13 +30,19 @@ export class ActivityResolver {
     });
   }
 
+  @Query(() => [Activity])
+  async activities(): Promise<Activity[]> {
+    return this.prisma.activity.findMany();
+  }
+
   @Mutation(() => Activity)
   async createActivity(
-    @Args({ name: 'person_ids', type: () => [Int] }) person_ids: number[],
+    @Args({ name: 'person_ids', nullable: true, type: () => [Int] })
+    person_ids: number[],
     @Args({ name: 'description' }) description: string,
     @Args({ name: 'source_id', nullable: true }) source_id: number | null,
   ) {
-    let source = null;
+    let source;
     if (source_id != null) {
       source = await this.prisma.source.findUnique({
         where: { id: source_id },
