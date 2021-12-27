@@ -40,18 +40,13 @@ export class ActivityResolver {
     @Args({ name: 'person_ids', nullable: true, type: () => [Int] })
     person_ids: number[],
     @Args({ name: 'description' }) description: string,
-    @Args({ name: 'source_id', nullable: true }) source_id: number | null,
+    @Args({ name: 'source_id', nullable: true, type: () => Int })
+    source_id: number | null,
   ) {
-    let source;
-    if (source_id != null) {
-      source = await this.prisma.source.findUnique({
-        where: { id: source_id },
-      });
-    }
     return await this.prisma.activity.create({
       data: {
         description: description,
-        source: source,
+        source_id: source_id,
         activityPersons: {
           create: person_ids.map((id) => {
             return {
