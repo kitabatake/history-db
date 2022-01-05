@@ -1,7 +1,6 @@
-import { Resolver, Mutation, Args, Query, Int } from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { PrismaService } from '../prisma.service';
 import { Source } from '../models/source.model';
-import { Person } from '../models/person.model';
 
 @Resolver(() => Source)
 export class SourceResolver {
@@ -31,6 +30,15 @@ export class SourceResolver {
     return this.prisma.source.create({
       data: {
         name: name,
+      },
+    });
+  }
+
+  @Mutation(() => Source)
+  async deleteSource(@Args({ name: 'id', type: () => Int }) id: number) {
+    return this.prisma.source.delete({
+      where: {
+        id: id,
       },
     });
   }

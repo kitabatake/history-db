@@ -89,4 +89,26 @@ export class PersonResolver {
       },
     });
   }
+
+  @Mutation(() => Person)
+  async deletePerson(@Args({ name: 'id', type: () => Int }) id: number) {
+    const [, , person] = await this.prisma.$transaction([
+      this.prisma.activityPerson.deleteMany({
+        where: {
+          person_id: id,
+        },
+      }),
+      this.prisma.personRelationPerson.deleteMany({
+        where: {
+          person_id: id,
+        },
+      }),
+      this.prisma.person.delete({
+        where: {
+          id: id,
+        },
+      }),
+    ]);
+    return person;
+  }
 }

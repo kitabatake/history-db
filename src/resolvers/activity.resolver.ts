@@ -11,6 +11,7 @@ import { PrismaService } from '../prisma.service';
 import { Activity } from '../models/activity.model';
 import { Person } from '../models/person.model';
 import { Source } from '../models/source.model';
+import { PersonRelation } from '../models/personRelation.model';
 
 @Resolver(() => Activity)
 export class ActivityResolver {
@@ -56,6 +57,23 @@ export class ActivityResolver {
         },
       },
     });
+  }
+
+  @Mutation(() => Activity)
+  async deleteActivity(@Args({ name: 'id', type: () => Int }) id: number) {
+    const [, activity] = await this.prisma.$transaction([
+      this.prisma.activityPerson.deleteMany({
+        where: {
+          activity_id: id,
+        },
+      }),
+      this.prisma.activity.delete({
+        where: {
+          id: id,
+        },
+      }),
+    ]);
+    return activity;
   }
 
   @ResolveField(() => [Person])

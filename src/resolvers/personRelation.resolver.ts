@@ -1,11 +1,11 @@
 import {
-  Resolver,
-  Query,
-  Mutation,
   Args,
-  Parent,
   Int,
+  Mutation,
+  Parent,
+  Query,
   ResolveField,
+  Resolver,
 } from '@nestjs/graphql';
 import { Person } from '../models/person.model';
 import { PersonRelation } from '../models/personRelation.model';
@@ -50,6 +50,25 @@ export class PersonRelationResolver {
         },
       },
     });
+  }
+
+  @Mutation(() => PersonRelation)
+  async deletePersonRelation(
+    @Args({ name: 'id', type: () => Int }) id: number,
+  ) {
+    const [, personRelation] = await this.prisma.$transaction([
+      this.prisma.personRelationPerson.deleteMany({
+        where: {
+          person_relation_id: id,
+        },
+      }),
+      this.prisma.personRelation.delete({
+        where: {
+          id: id,
+        },
+      }),
+    ]);
+    return personRelation;
   }
 
   @ResolveField(() => [Person])
