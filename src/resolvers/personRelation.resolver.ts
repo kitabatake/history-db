@@ -10,6 +10,7 @@ import {
 import { Person } from '../models/person.model';
 import { PersonRelation } from '../models/personRelation.model';
 import { PrismaService } from '../prisma.service';
+import { Activity } from '../models/activity.model';
 
 @Resolver(() => PersonRelation)
 export class PersonRelationResolver {
@@ -26,9 +27,15 @@ export class PersonRelationResolver {
     });
   }
 
+  @Query(() => [PersonRelation])
+  async personRelations(): Promise<Activity[]> {
+    return this.prisma.personRelation.findMany();
+  }
+
   @Mutation(() => PersonRelation)
   async createPersonRelation(
-    @Args({ name: 'person_ids', type: () => [Int] }) person_ids: number[],
+    @Args({ name: 'person_ids', nullable: true, type: () => [Int!] })
+    person_ids: number[],
     @Args({ name: 'description' }) description: string,
   ) {
     return await this.prisma.personRelation.create({

@@ -17,8 +17,22 @@ export class PersonResolver {
   constructor(private prisma: PrismaService) {}
 
   @Query(() => [Person])
-  async persons(): Promise<Person[]> {
-    return this.prisma.person.findMany();
+  async persons(
+    @Args({ name: 'nameForSearch', nullable: true, type: () => String })
+    nameForSearch: string,
+  ): Promise<Person[]> {
+    let option = {};
+    if (nameForSearch != null) {
+      option = {
+        ...option,
+        where: {
+          name: {
+            contains: nameForSearch,
+          },
+        },
+      };
+    }
+    return this.prisma.person.findMany(option);
   }
 
   @Query(() => Person)
