@@ -60,6 +60,42 @@ export class ActivityResolver {
   }
 
   @Mutation(() => Activity)
+  async updateActivity(
+    @Args({ name: 'id', type: () => Int }) id: number,
+    @Args({ name: 'person_ids', nullable: true, type: () => [Int!] })
+    person_ids: number[],
+    @Args({ name: 'description' }) description: string,
+    @Args({ name: 'source_id', nullable: true, type: () => Int })
+    source_id: number | null,
+  ) {
+    const [, personRelation] = await this.prisma.$transaction([
+      this.prisma.activityPerson.deleteMany({
+        where: {
+          activity_id: id,
+        },
+      }),
+      this.prisma.activity.update({
+        where: {
+          id: id,
+        },
+        data: {
+          description: description,
+          source_id: source_id,
+          activityPersons: {
+            create: person_ids.map((id) => {
+              return {
+                person_id: id,
+              };
+            }),
+          },
+        },
+      }),
+    ]);
+
+    return personRelation;
+  }
+
+  @Mutation(() => Activity)
   async deleteActivity(@Args({ name: 'id', type: () => Int }) id: number) {
     const [, activity] = await this.prisma.$transaction([
       this.prisma.activityPerson.deleteMany({

@@ -91,6 +91,23 @@ export class PersonResolver {
   }
 
   @Mutation(() => Person)
+  async updatePerson(
+    @Args({ name: 'id', type: () => Int }) id: number,
+    @Args({ name: 'name' }) name: string,
+    @Args({ name: 'description' }) description: string,
+  ) {
+    return this.prisma.person.update({
+      where: {
+        id: id,
+      },
+      data: {
+        name: name,
+        description: description,
+      },
+    });
+  }
+
+  @Mutation(() => Person)
   async deletePerson(@Args({ name: 'id', type: () => Int }) id: number) {
     const [, , person] = await this.prisma.$transaction([
       this.prisma.activityPerson.deleteMany({

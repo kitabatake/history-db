@@ -11,6 +11,7 @@ import { Person } from '../models/person.model';
 import { PersonRelation } from '../models/personRelation.model';
 import { PrismaService } from '../prisma.service';
 import { Activity } from '../models/activity.model';
+import { Source } from '../models/source.model';
 
 @Resolver(() => PersonRelation)
 export class PersonRelationResolver {
@@ -50,6 +51,39 @@ export class PersonRelationResolver {
         },
       },
     });
+  }
+
+  @Mutation(() => PersonRelation)
+  async updatePersonRelation(
+    @Args({ name: 'id', type: () => Int }) id: number,
+    @Args({ name: 'person_ids', nullable: true, type: () => [Int!] })
+    person_ids: number[],
+    @Args({ name: 'description' }) description: string,
+  ) {
+    const [, personRelation] = await this.prisma.$transaction([
+      this.prisma.personRelationPerson.deleteMany({
+        where: {
+          person_relation_id: id,
+        },
+      }),
+      this.prisma.personRelation.update({
+        where: {
+          id: id,
+        },
+        data: {
+          description: description,
+          personRelationPersons: {
+            create: person_ids.map((id) => {
+              return {
+                person_id: id,
+              };
+            }),
+          },
+        },
+      }),
+    ]);
+
+    return personRelation;
   }
 
   @Mutation(() => PersonRelation)
