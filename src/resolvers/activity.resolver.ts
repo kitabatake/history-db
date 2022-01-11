@@ -38,20 +38,20 @@ export class ActivityResolver {
 
   @Mutation(() => Activity)
   async createActivity(
-    @Args({ name: 'person_ids', nullable: true, type: () => [Int] })
-    person_ids: number[],
+    @Args({ name: 'personIds', nullable: true, type: () => [Int] })
+    personIds: number[],
     @Args({ name: 'description' }) description: string,
-    @Args({ name: 'source_id', nullable: true, type: () => Int })
-    source_id: number | null,
+    @Args({ name: 'sourceId', nullable: true, type: () => Int })
+    sourceId: number | null,
   ) {
     return await this.prisma.activity.create({
       data: {
         description: description,
-        source_id: source_id,
+        sourceId: sourceId,
         activityPersons: {
-          create: person_ids.map((id) => {
+          create: personIds.map((id) => {
             return {
-              person_id: id,
+              personId: id,
             };
           }),
         },
@@ -62,16 +62,16 @@ export class ActivityResolver {
   @Mutation(() => Activity)
   async updateActivity(
     @Args({ name: 'id', type: () => Int }) id: number,
-    @Args({ name: 'person_ids', nullable: true, type: () => [Int!] })
-    person_ids: number[],
+    @Args({ name: 'personIds', nullable: true, type: () => [Int!] })
+    personIds: number[],
     @Args({ name: 'description' }) description: string,
-    @Args({ name: 'source_id', nullable: true, type: () => Int })
-    source_id: number | null,
+    @Args({ name: 'sourceId', nullable: true, type: () => Int })
+    sourceId: number | null,
   ) {
     const [, personRelation] = await this.prisma.$transaction([
       this.prisma.activityPerson.deleteMany({
         where: {
-          activity_id: id,
+          activityId: id,
         },
       }),
       this.prisma.activity.update({
@@ -80,11 +80,11 @@ export class ActivityResolver {
         },
         data: {
           description: description,
-          source_id: source_id,
+          sourceId: sourceId,
           activityPersons: {
-            create: person_ids.map((id) => {
+            create: personIds.map((id) => {
               return {
-                person_id: id,
+                personId: id,
               };
             }),
           },
@@ -100,7 +100,7 @@ export class ActivityResolver {
     const [, activity] = await this.prisma.$transaction([
       this.prisma.activityPerson.deleteMany({
         where: {
-          activity_id: id,
+          activityId: id,
         },
       }),
       this.prisma.activity.delete({
@@ -116,7 +116,7 @@ export class ActivityResolver {
   async persons(@Parent() activity: Activity) {
     const activityPersons = await this.prisma.activityPerson.findMany({
       where: {
-        activity_id: activity.id,
+        activityId: activity.id,
       },
       include: {
         person: true,

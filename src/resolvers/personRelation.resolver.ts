@@ -35,17 +35,17 @@ export class PersonRelationResolver {
 
   @Mutation(() => PersonRelation)
   async createPersonRelation(
-    @Args({ name: 'person_ids', nullable: true, type: () => [Int!] })
-    person_ids: number[],
+    @Args({ name: 'personIds', nullable: true, type: () => [Int!] })
+    personIds: number[],
     @Args({ name: 'description' }) description: string,
   ) {
     return await this.prisma.personRelation.create({
       data: {
         description: description,
         personRelationPersons: {
-          create: person_ids.map((id) => {
+          create: personIds.map((id) => {
             return {
-              person_id: id,
+              personId: id,
             };
           }),
         },
@@ -56,14 +56,14 @@ export class PersonRelationResolver {
   @Mutation(() => PersonRelation)
   async updatePersonRelation(
     @Args({ name: 'id', type: () => Int }) id: number,
-    @Args({ name: 'person_ids', nullable: true, type: () => [Int!] })
-    person_ids: number[],
+    @Args({ name: 'personIds', nullable: true, type: () => [Int!] })
+    personIds: number[],
     @Args({ name: 'description' }) description: string,
   ) {
     const [, personRelation] = await this.prisma.$transaction([
       this.prisma.personRelationPerson.deleteMany({
         where: {
-          person_relation_id: id,
+          personRelationId: id,
         },
       }),
       this.prisma.personRelation.update({
@@ -73,9 +73,9 @@ export class PersonRelationResolver {
         data: {
           description: description,
           personRelationPersons: {
-            create: person_ids.map((id) => {
+            create: personIds.map((id) => {
               return {
-                person_id: id,
+                personId: id,
               };
             }),
           },
@@ -93,7 +93,7 @@ export class PersonRelationResolver {
     const [, personRelation] = await this.prisma.$transaction([
       this.prisma.personRelationPerson.deleteMany({
         where: {
-          person_relation_id: id,
+          personRelationId: id,
         },
       }),
       this.prisma.personRelation.delete({
@@ -110,7 +110,7 @@ export class PersonRelationResolver {
     const personRelationPersons = await this.prisma.personRelationPerson.findMany(
       {
         where: {
-          person_relation_id: personRelation.id,
+          personRelationId: personRelation.id,
         },
         include: {
           person: true,

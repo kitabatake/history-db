@@ -26,10 +26,10 @@ model PersonRelation {
 
 model PersonRelationPerson {
     id    Int     @default(autoincrement()) @id
-    person_relation_id Int
-    person_relation PersonRelation @relation(fields: [person_relation_id], references: [id])
-    person_id Int
-    person Person @relation(fields: [person_id], references: [id])
+    personRelationId Int
+    personRelation PersonRelation @relation(fields: [personRelationId], references: [id])
+    personId Int
+    person Person @relation(fields: [personId], references: [id])
 }
 
 model Source {
@@ -41,15 +41,15 @@ model Source {
 model Activity {
     id    Int     @default(autoincrement()) @id
     description String?
-    source_id Int?
-    source Source? @relation(fields: [source_id], references: [id])
+    sourceId Int?
+    source Source? @relation(fields: [sourceId], references: [id])
     activityPersons ActivityPerson[]
 }
 
 model ActivityPerson {
     id    Int     @default(autoincrement()) @id
-    activity_id Int
-    activity Activity @relation(fields: [activity_id], references: [id])
-    person_id Int
-    person Person @relation(fields: [person_id], references: [id])
+    activityId Int
+    activity Activity @relation(fields: [activityId], references: [id])
+    personId Int
+    person Person @relation(fields: [personId], references: [id])
 }

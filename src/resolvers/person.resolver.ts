@@ -50,7 +50,7 @@ export class PersonResolver {
       where: {
         personRelationPersons: {
           some: {
-            person_id: person.id,
+            personId: person.id,
           },
         },
       },
@@ -66,7 +66,7 @@ export class PersonResolver {
       where: {
         activityPersons: {
           some: {
-            person_id: person.id,
+            personId: person.id,
           },
         },
       },
@@ -112,12 +112,12 @@ export class PersonResolver {
     const [, , person] = await this.prisma.$transaction([
       this.prisma.activityPerson.deleteMany({
         where: {
-          person_id: id,
+          personId: id,
         },
       }),
       this.prisma.personRelationPerson.deleteMany({
         where: {
-          person_id: id,
+          personId: id,
         },
       }),
       this.prisma.person.delete({
