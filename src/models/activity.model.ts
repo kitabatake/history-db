@@ -10,6 +10,15 @@ export class Activity {
   @Field()
   description?: string;
 
+  @Field(() => Int, { nullable: true })
+  year?: number;
+
+  @Field(() => Int, { nullable: true })
+  month?: number;
+
+  @Field(() => Int, { nullable: true })
+  day?: number;
+
   @Field(() => Source, { nullable: true })
   source?: Source;
 }

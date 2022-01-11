@@ -33,7 +33,9 @@ export class ActivityResolver {
 
   @Query(() => [Activity])
   async activities(): Promise<Activity[]> {
-    return this.prisma.activity.findMany();
+    return this.prisma.activity.findMany({
+      orderBy: [{ year: 'asc' }, { month: 'asc' }, { day: 'asc' }],
+    });
   }
 
   @Mutation(() => Activity)
@@ -41,13 +43,19 @@ export class ActivityResolver {
     @Args({ name: 'personIds', nullable: true, type: () => [Int] })
     personIds: number[],
     @Args({ name: 'description' }) description: string,
+    @Args({ name: 'year', nullable: true, type: () => Int }) year?: number,
+    @Args({ name: 'month', nullable: true, type: () => Int }) month?: number,
+    @Args({ name: 'day', nullable: true, type: () => Int }) day?: number,
     @Args({ name: 'sourceId', nullable: true, type: () => Int })
-    sourceId: number | null,
+    sourceId?: number,
   ) {
-    return await this.prisma.activity.create({
+    return this.prisma.activity.create({
       data: {
         description: description,
         sourceId: sourceId,
+        year: year,
+        month: month,
+        day: day,
         activityPersons: {
           create: personIds.map((id) => {
             return {
@@ -65,8 +73,11 @@ export class ActivityResolver {
     @Args({ name: 'personIds', nullable: true, type: () => [Int!] })
     personIds: number[],
     @Args({ name: 'description' }) description: string,
+    @Args({ name: 'year', nullable: true, type: () => Int }) year?: number,
+    @Args({ name: 'month', nullable: true, type: () => Int }) month?: number,
+    @Args({ name: 'day', nullable: true, type: () => Int }) day?: number,
     @Args({ name: 'sourceId', nullable: true, type: () => Int })
-    sourceId: number | null,
+    sourceId?: number,
   ) {
     const [, personRelation] = await this.prisma.$transaction([
       this.prisma.activityPerson.deleteMany({
@@ -81,6 +92,9 @@ export class ActivityResolver {
         data: {
           description: description,
           sourceId: sourceId,
+          year: year,
+          month: month,
+          day: day,
           activityPersons: {
             create: personIds.map((id) => {
               return {

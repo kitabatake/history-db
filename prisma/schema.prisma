@@ -44,6 +44,9 @@ model Activity {
     sourceId Int?
     source Source? @relation(fields: [sourceId], references: [id])
     activityPersons ActivityPerson[]
+    year Int?
+    month Int?
+    day Int?
 }
 
 model ActivityPerson {
