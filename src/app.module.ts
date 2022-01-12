@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { AppController } from './app.controller';
 import { PrismaService } from './prisma.service';
@@ -6,6 +6,8 @@ import { PersonResolver } from './resolvers/person.resolver';
 import { PersonRelationResolver } from './resolvers/personRelation.resolver';
 import { SourceResolver } from './resolvers/source.resolver';
 import { ActivityResolver } from './resolvers/activity.resolver';
+import { AppLoggerMiddleware } from './middlewares/appLoggerMiddleware';
+import { GraphqlLoggingPlugin } from './plugins/graphqlLoggingPlugin';
 
 @Module({
   imports: [
@@ -22,6 +24,11 @@ import { ActivityResolver } from './resolvers/activity.resolver';
     PersonRelationResolver,
     SourceResolver,
     ActivityResolver,
+    GraphqlLoggingPlugin,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(AppLoggerMiddleware).forRoutes('*');
+  }
+}

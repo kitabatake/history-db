@@ -46,7 +46,7 @@ export class PersonResolver {
 
   @ResolveField(() => [PersonRelation])
   async relations(@Parent() person: Person) {
-    return await this.prisma.personRelation.findMany({
+    return this.prisma.personRelation.findMany({
       where: {
         personRelationPersons: {
           some: {
@@ -62,7 +62,7 @@ export class PersonResolver {
 
   @ResolveField(() => [Activity])
   async activities(@Parent() person: Person) {
-    return await this.prisma.activity.findMany({
+    return this.prisma.activity.findMany({
       where: {
         activityPersons: {
           some: {
