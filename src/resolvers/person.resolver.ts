@@ -11,6 +11,7 @@ import { Person } from '../models/person.model';
 import { PersonRelation } from '../models/personRelation.model';
 import { PrismaService } from '../prisma.service';
 import { Activity } from '../models/activity.model';
+import { ValidationError } from 'apollo-server-errors';
 
 @Resolver(() => Person)
 export class PersonResolver {
@@ -82,6 +83,9 @@ export class PersonResolver {
     @Args({ name: 'name' }) name: string,
     @Args({ name: 'description' }) description: string,
   ) {
+    if (name == '') {
+      throw new ValidationError('名前を入力してください');
+    }
     return this.prisma.person.create({
       data: {
         name: name,
@@ -96,6 +100,9 @@ export class PersonResolver {
     @Args({ name: 'name' }) name: string,
     @Args({ name: 'description' }) description: string,
   ) {
+    if (name == '') {
+      throw new ValidationError('名前を入力してください');
+    }
     return this.prisma.person.update({
       where: {
         id: id,
