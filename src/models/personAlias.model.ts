@@ -2,13 +2,15 @@ import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { Person } from './person.model';
 
 @ObjectType()
-export class PersonRelation {
+export class PersonAlias {
   @Field((type) => Int)
   id: number;
 
-  // @Field(() => [Person])
-  // persons: Person[];
+  personId: number;
 
   @Field()
-  description: string;
+  alias: string;
+
+  @Field(() => Person)
+  person: Person;
 }

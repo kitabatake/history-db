@@ -12,6 +12,7 @@ import { PersonRelation } from '../models/personRelation.model';
 import { PrismaService } from '../prisma.service';
 import { Activity } from '../models/activity.model';
 import { ValidationError } from 'apollo-server-errors';
+import { PersonAlias } from '../models/personAlias.model';
 
 @Resolver(() => Person)
 export class PersonResolver {
@@ -27,9 +28,22 @@ export class PersonResolver {
       option = {
         ...option,
         where: {
-          name: {
-            contains: nameForSearch,
-          },
+          OR: [
+            {
+              name: {
+                contains: nameForSearch,
+              },
+            },
+            {
+              personAliases: {
+                some: {
+                  alias: {
+                    contains: nameForSearch,
+                  },
+                },
+              },
+            },
+          ],
         },
       };
     }
@@ -74,6 +88,15 @@ export class PersonResolver {
       include: {
         activityPersons: true,
         source: true,
+      },
+    });
+  }
+
+  @ResolveField(() => [PersonAlias])
+  async aliases(@Parent() person: Person) {
+    return this.prisma.personAlias.findMany({
+      where: {
+        personId: person.id,
       },
     });
   }
