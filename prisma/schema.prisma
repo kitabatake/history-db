@@ -16,7 +16,16 @@ model Person {
     description String?
     personRelationPersons PersonRelationPerson[]
     activityPersons ActivityPerson[]
+    personAliases PersonAlias[]
 }
+
+model PersonAlias {
+    id    Int     @default(autoincrement()) @id
+    alias String
+    person Person @relation(fields: [personId], references: [id])
+    personId Int
+}
+
 
 model PersonRelation {
     id    Int     @default(autoincrement()) @id
