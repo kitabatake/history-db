@@ -150,6 +150,11 @@ export class PersonResolver {
           personId: id,
         },
       }),
+      this.prisma.personAlias.deleteMany({
+        where: {
+          personId: id,
+        },
+      }),
       this.prisma.person.delete({
         where: {
           id: id,
