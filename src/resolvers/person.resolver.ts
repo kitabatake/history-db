@@ -126,6 +126,7 @@ export class PersonResolver {
     if (name == '') {
       throw new ValidationError('名前を入力してください');
     }
+
     return this.prisma.person.update({
       where: {
         id: id,
