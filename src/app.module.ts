@@ -9,6 +9,7 @@ import { ActivityResolver } from './resolvers/activity.resolver';
 import { AppLoggerMiddleware } from './middlewares/appLoggerMiddleware';
 import { GraphqlLoggingPlugin } from './plugins/graphqlLoggingPlugin';
 import { PersonAliasResolver } from './resolvers/personAlias.resolver';
+import { GraphDBService } from './graphDB.service';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PersonAliasResolver } from './resolvers/personAlias.resolver';
   controllers: [AppController],
   providers: [
     PrismaService,
+    GraphDBService,
     PersonResolver,
     PersonAliasResolver,
     PersonRelationResolver,

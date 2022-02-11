@@ -11,7 +11,16 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data:delegated
+  neo4j:
+    image: neo4j
+#    restart: always
+    ports:
+      - 57474:7474
+      - 57687:7687
+    volumes:
+      - neo4j_data:/data:delegated
 
 volumes:
   db_data:
+  neo4j_data:
 
