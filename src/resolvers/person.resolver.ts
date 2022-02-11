@@ -24,41 +24,12 @@ export class PersonResolver {
     @Args({ name: 'nameForSearch', nullable: true, type: () => String })
     nameForSearch: string,
   ): Promise<Person[]> {
-    // let option = {};
-    // if (nameForSearch != null) {
-    //   option = {
-    //     ...option,
-    //     where: {
-    //       OR: [
-    //         {
-    //           name: {
-    //             contains: nameForSearch,
-    //           },
-    //         },
-    //         {
-    //           personAliases: {
-    //             some: {
-    //               alias: {
-    //                 contains: nameForSearch,
-    //               },
-    //             },
-    //           },
-    //         },
-    //       ],
-    //     },
-    //   };
-    // }
-    // return this.prisma.person.findMany(option);
     return this.graphDB.getPersons(nameForSearch);
   }
 
   @Query(() => Person)
   async person(@Args('id', { type: () => Int }) id: number): Promise<Person> {
-    return this.prisma.person.findUnique({
-      where: {
-        id: id,
-      },
-    });
+    return this.graphDB.getPerson(id);
   }
 
   @ResolveField(() => [PersonRelation])
@@ -111,12 +82,6 @@ export class PersonResolver {
     if (name == '') {
       throw new ValidationError('名前を入力してください');
     }
-    // return this.prisma.person.create({
-    //   data: {
-    //     name: name,
-    //     description: description,
-    //   },
-    // });
     return this.graphDB.createPerson(name, description);
   }
 
@@ -129,16 +94,7 @@ export class PersonResolver {
     if (name == '') {
       throw new ValidationError('名前を入力してください');
     }
-
-    return this.prisma.person.update({
-      where: {
-        id: id,
-      },
-      data: {
-        name: name,
-        description: description,
-      },
-    });
+    return this.graphDB.updatePerson(id, name, description);
   }
 
   @Mutation(() => Person)

@@ -56,4 +56,42 @@ export class GraphDBService {
     }
     return result.records.map((r) => Person.createFromGraphNode(r.get('p')));
   }
+
+  public async getPerson(id: number): Promise<Person> {
+    const session = this.driver.session();
+    let result: QueryResult;
+    try {
+      result = await session.run(
+        'MATCH (p:Person) WHERE ID(p) = $id RETURN p',
+        { id: id },
+      );
+    } finally {
+      await session.close();
+    }
+    return Person.createFromGraphNode(result.records[0].get('p'));
+  }
+
+  public async updatePerson(id: number, name: string, description: string) {
+    const session = this.driver.session();
+    let result: QueryResult;
+    try {
+      result = await session.run(
+        `
+          MATCH (p:Person) 
+          WHERE ID(p) = $id 
+          SET p.name = $name, p.description = $description
+          RETURN p
+         `,
+        {
+          id: id,
+          name: name,
+          description: description,
+        },
+      );
+    } finally {
+      await session.close();
+    }
+
+    return Person.createFromGraphNode(result.records[0].get('p'));
+  }
 }
