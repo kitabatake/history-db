@@ -1,10 +1,10 @@
 import { Driver } from 'neo4j-driver/types/driver';
-import neo4j, { QueryResult, Node } from 'neo4j-driver';
-import { Injectable } from '@nestjs/common';
+import neo4j, { QueryResult } from 'neo4j-driver';
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Person } from './models/person.model';
 
 @Injectable()
-export class GraphDBService {
+export class GraphDBService implements OnModuleInit, OnModuleDestroy {
   driver: Driver;
 
   async onModuleInit() {
