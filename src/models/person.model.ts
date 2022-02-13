@@ -1,5 +1,6 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { Node } from 'neo4j-driver';
+
 @ObjectType()
 export class Person {
   static createFromGraphNode(node: Node): Person {
@@ -7,13 +8,20 @@ export class Person {
       node.identity.toNumber(),
       node.properties['name'],
       node.properties['description'],
+      node.properties['aliases'] || [],
     );
   }
 
-  constructor(id: number, name: string, description: string) {
+  constructor(
+    id: number,
+    name: string,
+    description: string,
+    aliases: string[],
+  ) {
     this.id = id;
     this.name = name;
     this.description = description;
+    this.aliases = aliases;
   }
 
   @Field(() => Int)
@@ -24,4 +32,7 @@ export class Person {
 
   @Field({ nullable: true })
   description?: string;
+
+  @Field(() => [String])
+  aliases: string[];
 }

@@ -71,7 +71,11 @@ export class GraphDBService implements OnModuleInit, OnModuleDestroy {
     return Person.createFromGraphNode(result.records[0].get('p'));
   }
 
-  public async updatePerson(id: number, name: string, description: string) {
+  public async updatePerson(
+    id: number,
+    name: string,
+    description: string,
+  ): Promise<Person> {
     const session = this.driver.session();
     let result: QueryResult;
     try {
@@ -86,6 +90,52 @@ export class GraphDBService implements OnModuleInit, OnModuleDestroy {
           id: id,
           name: name,
           description: description,
+        },
+      );
+    } finally {
+      await session.close();
+    }
+
+    return Person.createFromGraphNode(result.records[0].get('p'));
+  }
+
+  public async addPersonAlias(id: number, alias: string): Promise<Person> {
+    const session = this.driver.session();
+    let result: QueryResult;
+    try {
+      result = await session.run(
+        `
+          MATCH (p:Person) 
+          WHERE ID(p) = $id 
+          SET p.aliases = COALESCE(p.aliases, []) + [$alias]
+          RETURN p
+         `,
+        {
+          id: id,
+          alias: alias,
+        },
+      );
+    } finally {
+      await session.close();
+    }
+
+    return Person.createFromGraphNode(result.records[0].get('p'));
+  }
+
+  public async removePersonAlias(id: number, alias: string): Promise<Person> {
+    const session = this.driver.session();
+    let result: QueryResult;
+    try {
+      result = await session.run(
+        `
+          MATCH (p:Person) 
+          WHERE ID(p) = $id 
+          SET p.aliases = [alias in p.aliases where alias <> $alias]
+          RETURN p
+         `,
+        {
+          id: id,
+          alias: alias,
         },
       );
     } finally {

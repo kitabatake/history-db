@@ -12,7 +12,6 @@ import { PersonRelation } from '../models/personRelation.model';
 import { PrismaService } from '../prisma.service';
 import { Activity } from '../models/activity.model';
 import { ValidationError } from 'apollo-server-errors';
-import { PersonAlias } from '../models/personAlias.model';
 import { GraphDBService } from '../graphDB.service';
 
 @Resolver(() => Person)
@@ -65,15 +64,6 @@ export class PersonResolver {
     });
   }
 
-  @ResolveField(() => [PersonAlias])
-  async aliases(@Parent() person: Person) {
-    return this.prisma.personAlias.findMany({
-      where: {
-        personId: person.id,
-      },
-    });
-  }
-
   @Mutation(() => Person)
   async createPerson(
     @Args({ name: 'name' }) name: string,
@@ -122,5 +112,21 @@ export class PersonResolver {
       }),
     ]);
     return person;
+  }
+
+  @Mutation(() => Person)
+  async addPersonAlias(
+    @Args({ name: 'personId', type: () => Int! }) personId: number,
+    @Args({ name: 'alias' }) alias: string,
+  ) {
+    return await this.graphDB.addPersonAlias(personId, alias);
+  }
+
+  @Mutation(() => Person)
+  async removePersonAlias(
+    @Args({ name: 'personId', type: () => Int }) personId: number,
+    @Args({ name: 'alias' }) alias: string,
+  ) {
+    return await this.graphDB.removePersonAlias(personId, alias);
   }
 }
