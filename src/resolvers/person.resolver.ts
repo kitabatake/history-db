@@ -13,6 +13,7 @@ import { PrismaService } from '../prisma.service';
 import { Activity } from '../models/activity.model';
 import { ValidationError } from 'apollo-server-errors';
 import { GraphDBService } from '../graphDB.service';
+import { RelatedPerson } from '../models/relatedPerson.model';
 
 @Resolver(() => Person)
 export class PersonResolver {
@@ -29,6 +30,11 @@ export class PersonResolver {
   @Query(() => Person)
   async person(@Args('id', { type: () => Int }) id: number): Promise<Person> {
     return this.graphDB.getPerson(id);
+  }
+
+  @ResolveField(() => [RelatedPerson])
+  async relatedPersons(@Parent() person: Person) {
+    return this.graphDB.getRelatedPersons(person.id);
   }
 
   @ResolveField(() => [PersonRelation])
@@ -128,5 +134,22 @@ export class PersonResolver {
     @Args({ name: 'alias' }) alias: string,
   ) {
     return await this.graphDB.removePersonAlias(personId, alias);
+  }
+
+  @Mutation(() => Person)
+  async addRelatedPerson(
+    @Args({ name: 'fromId', type: () => Int! }) fromId: number,
+    @Args({ name: 'toId', type: () => Int! }) toId: number,
+    @Args({ name: 'label' }) label: string,
+  ) {
+    return await this.graphDB.addPersonRelationship(fromId, toId, label);
+  }
+
+  @Mutation(() => Int)
+  async removeRelatedPerson(
+    @Args({ name: 'id', type: () => Int, nullable: false }) id: number,
+  ) {
+    await this.graphDB.removePersonRelationship(id);
+    return id;
   }
 }

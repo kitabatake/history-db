@@ -2,6 +2,7 @@ import { Driver } from 'neo4j-driver/types/driver';
 import neo4j, { QueryResult } from 'neo4j-driver';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Person } from './models/person.model';
+import { RelatedPerson } from './models/relatedPerson.model';
 
 @Injectable()
 export class GraphDBService implements OnModuleInit, OnModuleDestroy {
@@ -55,6 +56,26 @@ export class GraphDBService implements OnModuleInit, OnModuleDestroy {
       await session.close();
     }
     return result.records.map((r) => Person.createFromGraphNode(r.get('p')));
+  }
+
+  public async getRelatedPersons(id: number): Promise<RelatedPerson[]> {
+    const session = this.driver.session();
+    let result: QueryResult;
+    try {
+      result = await session.run(
+        `
+          MATCH (from:Person)-[r]-(to:Person) 
+          WHERE ID(from) = $id 
+          RETURN r, to
+         `,
+        { id: id },
+      );
+    } finally {
+      await session.close();
+    }
+    return result.records.map((r) =>
+      RelatedPerson.createFromGraphData(r.get('r'), r.get('to')),
+    );
   }
 
   public async getPerson(id: number): Promise<Person> {
@@ -143,5 +164,52 @@ export class GraphDBService implements OnModuleInit, OnModuleDestroy {
     }
 
     return Person.createFromGraphNode(result.records[0].get('p'));
+  }
+
+  public async addPersonRelationship(
+    fromId: number,
+    toId: number,
+    label: string,
+  ): Promise<Person> {
+    const session = this.driver.session();
+    let result: QueryResult;
+    try {
+      result = await session.run(
+        `
+          MATCH (from:Person) 
+          WHERE ID(from) = $fromId 
+          MATCH (to:Person) 
+          WHERE ID(to) = $toId 
+          CREATE (from) -[r:${label}]-> (to)
+          RETURN from
+         `,
+        {
+          fromId: fromId,
+          toId: toId,
+        },
+      );
+    } finally {
+      await session.close();
+    }
+
+    return Person.createFromGraphNode(result.records[0].get('from'));
+  }
+
+  public async removePersonRelationship(id: number) {
+    const session = this.driver.session();
+    try {
+      await session.run(
+        `
+          MATCH ()-[r]-() 
+          WHERE ID(r) = $id
+          DELETE r
+         `,
+        {
+          id: id,
+        },
+      );
+    } finally {
+      await session.close();
+    }
   }
 }
