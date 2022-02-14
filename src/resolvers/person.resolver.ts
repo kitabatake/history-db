@@ -122,7 +122,8 @@ export class PersonResolver {
 
   @Mutation(() => Person)
   async addPersonAlias(
-    @Args({ name: 'personId', type: () => Int! }) personId: number,
+    @Args({ name: 'personId', type: () => Int, nullable: false })
+    personId: number,
     @Args({ name: 'alias' }) alias: string,
   ) {
     return await this.graphDB.addPersonAlias(personId, alias);
@@ -138,8 +139,8 @@ export class PersonResolver {
 
   @Mutation(() => Person)
   async addRelatedPerson(
-    @Args({ name: 'fromId', type: () => Int! }) fromId: number,
-    @Args({ name: 'toId', type: () => Int! }) toId: number,
+    @Args({ name: 'fromId', type: () => Int, nullable: false }) fromId: number,
+    @Args({ name: 'toId', type: () => Int, nullable: false }) toId: number,
     @Args({ name: 'label' }) label: string,
   ) {
     return await this.graphDB.addPersonRelationship(fromId, toId, label);
