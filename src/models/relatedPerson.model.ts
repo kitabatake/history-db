@@ -13,9 +13,9 @@ export class RelatedPerson {
     );
   }
 
-  constructor(id: number, type: string, person: Person) {
+  constructor(id: number, label: string, person: Person) {
     this.id = id;
-    this.type = type;
+    this.label = label;
     this.person = person;
   }
 
@@ -23,7 +23,7 @@ export class RelatedPerson {
   id: number;
 
   @Field()
-  type: string;
+  label: string;
 
   @Field(() => Person)
   person: Person;
