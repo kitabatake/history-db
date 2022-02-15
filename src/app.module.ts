@@ -3,7 +3,6 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { AppController } from './app.controller';
 import { PrismaService } from './prisma.service';
 import { PersonResolver } from './resolvers/person.resolver';
-import { PersonRelationResolver } from './resolvers/personRelation.resolver';
 import { SourceResolver } from './resolvers/source.resolver';
 import { ActivityResolver } from './resolvers/activity.resolver';
 import { AppLoggerMiddleware } from './middlewares/appLoggerMiddleware';
@@ -23,7 +22,6 @@ import { GraphDBService } from './graphDB.service';
     PrismaService,
     GraphDBService,
     PersonResolver,
-    PersonRelationResolver,
     SourceResolver,
     ActivityResolver,
     GraphqlLoggingPlugin,

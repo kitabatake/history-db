@@ -11,7 +11,6 @@ import { PrismaService } from '../prisma.service';
 import { Activity } from '../models/activity.model';
 import { Person } from '../models/person.model';
 import { Source } from '../models/source.model';
-import { PersonRelation } from '../models/personRelation.model';
 
 @Resolver(() => Activity)
 export class ActivityResolver {

@@ -8,7 +8,6 @@ import {
   ResolveField,
 } from '@nestjs/graphql';
 import { Person } from '../models/person.model';
-import { PersonRelation } from '../models/personRelation.model';
 import { PrismaService } from '../prisma.service';
 import { Activity } from '../models/activity.model';
 import { ValidationError } from 'apollo-server-errors';
@@ -35,22 +34,6 @@ export class PersonResolver {
   @ResolveField(() => [RelatedPerson])
   async relatedPersons(@Parent() person: Person) {
     return this.graphDB.getRelatedPersons(person.id);
-  }
-
-  @ResolveField(() => [PersonRelation])
-  async relations(@Parent() person: Person) {
-    return this.prisma.personRelation.findMany({
-      where: {
-        personRelationPersons: {
-          some: {
-            personId: person.id,
-          },
-        },
-      },
-      include: {
-        personRelationPersons: true,
-      },
-    });
   }
 
   @ResolveField(() => [Activity])
