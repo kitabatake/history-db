@@ -13,6 +13,7 @@ import { Activity } from '../models/activity.model';
 import { ValidationError } from 'apollo-server-errors';
 import { GraphDBService } from '../graphDB.service';
 import { RelatedPerson } from '../models/relatedPerson.model';
+import { RelationshipDirection } from '../RelationshipDirection';
 
 @Resolver(() => Person)
 export class PersonResolver {
