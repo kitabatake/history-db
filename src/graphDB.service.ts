@@ -3,7 +3,7 @@ import neo4j, { QueryResult } from 'neo4j-driver';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Person } from './models/person.model';
 import { RelatedPerson } from './models/relatedPerson.model';
-import { RelationshipDirection } from './RelationshipDirection';
+import { RelationshipDirection } from './models/RelationshipDirection';
 
 @Injectable()
 export class GraphDBService implements OnModuleInit, OnModuleDestroy {

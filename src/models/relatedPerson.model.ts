@@ -2,7 +2,7 @@ import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Person } from './person.model';
 import { Node } from 'neo4j-driver';
 import { Relationship } from 'neo4j-driver-core/types/graph-types';
-import { RelationshipDirection } from '../RelationshipDirection';
+import { RelationshipDirection } from './RelationshipDirection';
 
 @ObjectType()
 export class RelatedPerson {
