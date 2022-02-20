@@ -4,6 +4,7 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Person } from './models/person.model';
 import { RelatedPerson } from './models/relatedPerson.model';
 import { RelationshipDirection } from './models/RelationshipDirection';
+import { Activity } from './models/activity.model';
 
 @Injectable()
 export class GraphDBService implements OnModuleInit, OnModuleDestroy {
@@ -39,6 +40,24 @@ export class GraphDBService implements OnModuleInit, OnModuleDestroy {
     }
 
     return Person.createFromGraphNode(result.records[0].get('p'));
+  }
+
+  public async createActivity(
+    name: string,
+    description?: string,
+  ): Promise<Activity> {
+    const session = this.driver.session();
+    let result: QueryResult;
+    try {
+      result = await session.run(
+        'CREATE (a:Activity {name: $name, description: $description}) RETURN a',
+        { name: name, description: description || '' },
+      );
+    } finally {
+      await session.close();
+    }
+
+    return Activity.createFromGraphNode(result.records[0].get('a'));
   }
 
   public async getPersons(nameForSearch?: string): Promise<Person[]> {
@@ -194,6 +213,24 @@ export class GraphDBService implements OnModuleInit, OnModuleDestroy {
     }
 
     return Person.createFromGraphNode(result.records[0].get('from'));
+  }
+
+  public async deleteActivity(id: number) {
+    const session = this.driver.session();
+    try {
+      await session.run(
+        `
+          MATCH (a:Activity)
+          WHERE ID(a) = $id
+          DELETE a
+         `,
+        {
+          id: id,
+        },
+      );
+    } finally {
+      await session.close();
+    }
   }
 
   public async removePersonRelationship(id: number) {
