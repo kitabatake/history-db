@@ -78,6 +78,24 @@ export class GraphDBService implements OnModuleInit, OnModuleDestroy {
     return result.records.map((r) => Person.createFromGraphNode(r.get('p')));
   }
 
+  public async getActivities(nameForSearch?: string): Promise<Activity[]> {
+    const session = this.driver.session();
+    let result: QueryResult;
+    try {
+      if (nameForSearch) {
+        result = await session.run(
+          'MATCH (a:Activity) WHERE a.name CONTAINS $nameForSearch RETURN a',
+          { nameForSearch: nameForSearch },
+        );
+      } else {
+        result = await session.run('MATCH (a:Activity) RETURN a');
+      }
+    } finally {
+      await session.close();
+    }
+    return result.records.map((r) => Activity.createFromGraphNode(r.get('a')));
+  }
+
   public async getRelatedPersons(id: number): Promise<RelatedPerson[]> {
     const session = this.driver.session();
     let result: QueryResult;

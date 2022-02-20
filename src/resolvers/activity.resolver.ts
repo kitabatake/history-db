@@ -31,12 +31,10 @@ export class ActivityResolver {
   //   });
   // }
   //
-  // @Query(() => [Activity])
-  // async activities(): Promise<Activity[]> {
-  //   return this.prisma.activity.findMany({
-  //     orderBy: [{ year: 'asc' }, { month: 'asc' }, { day: 'asc' }],
-  //   });
-  // }
+  @Query(() => [Activity])
+  async activities(): Promise<Activity[]> {
+    return this.graphDB.getActivities();
+  }
 
   @Mutation(() => Activity)
   async createActivity(
@@ -92,18 +90,5 @@ export class ActivityResolver {
   async deleteActivity(@Args({ name: 'id', type: () => Int }) id: number) {
     await this.graphDB.deleteActivity(id);
     return id;
-  }
-
-  @ResolveField(() => [Person])
-  async persons(@Parent() activity: Activity) {
-    const activityPersons = await this.prisma.activityPerson.findMany({
-      where: {
-        activityId: activity.id,
-      },
-      include: {
-        person: true,
-      },
-    });
-    return activityPersons.map((activityPerson) => activityPerson.person);
   }
 }
