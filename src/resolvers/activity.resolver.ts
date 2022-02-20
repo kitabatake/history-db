@@ -32,8 +32,11 @@ export class ActivityResolver {
   // }
   //
   @Query(() => [Activity])
-  async activities(): Promise<Activity[]> {
-    return this.graphDB.getActivities();
+  async activities(
+    @Args({ name: 'nameForSearch', nullable: true, type: () => String })
+    nameForSearch: string,
+  ): Promise<Activity[]> {
+    return this.graphDB.getActivities(nameForSearch);
   }
 
   @Mutation(() => Activity)

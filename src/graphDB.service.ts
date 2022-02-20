@@ -233,6 +233,35 @@ export class GraphDBService implements OnModuleInit, OnModuleDestroy {
     return Person.createFromGraphNode(result.records[0].get('from'));
   }
 
+  public async addPersonActivityRelationship(
+    personId: number,
+    activityId: number,
+    label: string,
+  ): Promise<Person> {
+    const session = this.driver.session();
+    let result: QueryResult;
+    try {
+      result = await session.run(
+        `
+          MATCH (p:Person) 
+          WHERE ID(p) = $personId 
+          MATCH (a:Activity) 
+          WHERE ID(a) = $activityId 
+          CREATE (p) -[r:${label}]-> (a)
+          RETURN p
+         `,
+        {
+          personId: personId,
+          activityId: activityId,
+        },
+      );
+    } finally {
+      await session.close();
+    }
+
+    return Person.createFromGraphNode(result.records[0].get('p'));
+  }
+
   public async deleteActivity(id: number) {
     const session = this.driver.session();
     try {
@@ -251,7 +280,7 @@ export class GraphDBService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  public async removePersonRelationship(id: number) {
+  public async removeRelationship(id: number) {
     const session = this.driver.session();
     try {
       await session.run(

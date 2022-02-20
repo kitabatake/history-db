@@ -134,7 +134,22 @@ export class PersonResolver {
   async removeRelatedPerson(
     @Args({ name: 'id', type: () => Int, nullable: false }) id: number,
   ) {
-    await this.graphDB.removePersonRelationship(id);
+    await this.graphDB.removeRelationship(id);
     return id;
+  }
+
+  @Mutation(() => Person)
+  async addRelationshipToActivity(
+    @Args({ name: 'personId', type: () => Int, nullable: false })
+    personId: number,
+    @Args({ name: 'activityId', type: () => Int, nullable: false })
+    activityId: number,
+    @Args({ name: 'label' }) label: string,
+  ) {
+    return await this.graphDB.addPersonActivityRelationship(
+      personId,
+      activityId,
+      label,
+    );
   }
 }
