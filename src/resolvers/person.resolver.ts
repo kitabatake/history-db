@@ -14,6 +14,7 @@ import { ValidationError } from 'apollo-server-errors';
 import { GraphDBService } from '../graphDB.service';
 import { RelatedPerson } from '../models/relatedPerson.model';
 import { RelationshipDirection } from '../models/RelationshipDirection';
+import { RelatedActivity } from '../models/relatedActivity.model';
 
 @Resolver(() => Person)
 export class PersonResolver {
@@ -35,6 +36,11 @@ export class PersonResolver {
   @ResolveField(() => [RelatedPerson])
   async relatedPersons(@Parent() person: Person) {
     return this.graphDB.getRelatedPersons(person.id);
+  }
+
+  @ResolveField(() => [RelatedActivity])
+  async relatedActivities(@Parent() person: Person) {
+    return this.graphDB.getRelatedActivities(person.id);
   }
 
   @ResolveField(() => [Activity])

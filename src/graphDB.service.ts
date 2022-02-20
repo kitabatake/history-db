@@ -5,6 +5,7 @@ import { Person } from './models/person.model';
 import { RelatedPerson } from './models/relatedPerson.model';
 import { RelationshipDirection } from './models/RelationshipDirection';
 import { Activity } from './models/activity.model';
+import { RelatedActivity } from './models/relatedActivity.model';
 
 @Injectable()
 export class GraphDBService implements OnModuleInit, OnModuleDestroy {
@@ -113,6 +114,26 @@ export class GraphDBService implements OnModuleInit, OnModuleDestroy {
     }
     return result.records.map((r) =>
       RelatedPerson.createFromGraphData(r.get('r'), r.get('to')),
+    );
+  }
+
+  public async getRelatedActivities(id: number): Promise<RelatedActivity[]> {
+    const session = this.driver.session();
+    let result: QueryResult;
+    try {
+      result = await session.run(
+        `
+          MATCH (from:Person)-[r]-(a:Activity) 
+          WHERE ID(from) = $id 
+          RETURN r, a
+         `,
+        { id: id },
+      );
+    } finally {
+      await session.close();
+    }
+    return result.records.map((r) =>
+      RelatedActivity.createFromGraphData(r.get('r'), r.get('a')),
     );
   }
 
