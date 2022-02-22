@@ -340,19 +340,21 @@ export class GraphDBService implements OnModuleInit, OnModuleDestroy {
     }
 
     const nodes = [Node.createFromGraphNode(result.records[0].get('target'))];
-    const edges = [];
+    const addedEdges = new Map<number, boolean>();
+    const edges = new Set<Edge>();
     result.records.map((record) => {
       nodes.push(Node.createFromGraphNode(record.get('node')));
-      record
-        .get('relationships')
-        .map((relationship) =>
-          edges.push(Edge.createFromGraphData(relationship)),
-        );
+      record.get('relationships').map((relationship) => {
+        if (!addedEdges.has(relationship.identity.toNumber())) {
+          addedEdges.set(relationship.identity.toNumber(), true);
+          edges.add(Edge.createFromGraphData(relationship));
+        }
+      });
     });
 
     return {
       nodes: nodes,
-      edges: edges,
+      edges: Array.from(edges),
     };
   }
 }
