@@ -6,6 +6,8 @@ import { RelatedPerson } from './models/relatedPerson.model';
 import { RelationshipDirection } from './models/RelationshipDirection';
 import { Activity } from './models/activity.model';
 import { RelatedActivity } from './models/relatedActivity.model';
+import { Node } from './models/graph/node.model';
+import { Edge } from './models/graph/edge.model';
 
 @Injectable()
 export class GraphDBService implements OnModuleInit, OnModuleDestroy {
@@ -317,5 +319,40 @@ export class GraphDBService implements OnModuleInit, OnModuleDestroy {
     } finally {
       await session.close();
     }
+  }
+
+  public async getElements(targetNodeId: number) {
+    const session = this.driver.session();
+    let result: QueryResult;
+    try {
+      result = await session.run(
+        `
+          MATCH m = (target)-[*1..2]-(node)
+          WHERE ID(target) = $targetNodeId 
+          RETURN target, node, relationships(m) as relationships
+         `,
+        {
+          targetNodeId: targetNodeId,
+        },
+      );
+    } finally {
+      await session.close();
+    }
+
+    const nodes = [Node.createFromGraphNode(result.records[0].get('target'))];
+    const edges = [];
+    result.records.map((record) => {
+      nodes.push(Node.createFromGraphNode(record.get('node')));
+      record
+        .get('relationships')
+        .map((relationship) =>
+          edges.push(Edge.createFromGraphData(relationship)),
+        );
+    });
+
+    return {
+      nodes: nodes,
+      edges: edges,
+    };
   }
 }
