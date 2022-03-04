@@ -15,13 +15,22 @@ export class RelatedActivity {
       rel.identity.toNumber(),
       rel.type,
       Activity.createFromGraphNode(activity),
+      rel.start.toNumber() == activity.identity.toNumber()
+        ? RelationshipDirection.INWARD
+        : RelationshipDirection.OUTWARD,
     );
   }
 
-  constructor(id: number, label: string, activity: Activity) {
+  constructor(
+    id: number,
+    label: string,
+    activity: Activity,
+    direction: RelationshipDirection,
+  ) {
     this.id = id;
     this.label = label;
     this.activity = activity;
+    this.direction = direction;
   }
 
   @Field((type) => Int)
@@ -32,4 +41,7 @@ export class RelatedActivity {
 
   @Field(() => Activity)
   activity: Activity;
+
+  @Field(() => RelationshipDirection)
+  direction: RelationshipDirection;
 }

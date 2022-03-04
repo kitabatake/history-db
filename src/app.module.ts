@@ -8,7 +8,6 @@ import { ActivityResolver } from './resolvers/activity.resolver';
 import { AppLoggerMiddleware } from './middlewares/appLoggerMiddleware';
 import { GraphqlLoggingPlugin } from './plugins/graphqlLoggingPlugin';
 import { GraphDBService } from './graphDB.service';
-import { GraphResolver } from './resolvers/graph.resolver';
 
 @Module({
   imports: [
@@ -20,7 +19,6 @@ import { GraphResolver } from './resolvers/graph.resolver';
   ],
   controllers: [AppController],
   providers: [
-    GraphResolver,
     PrismaService,
     GraphDBService,
     PersonResolver,

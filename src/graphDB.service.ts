@@ -105,7 +105,7 @@ export class GraphDBService implements OnModuleInit, OnModuleDestroy {
     try {
       result = await session.run(
         `
-          MATCH (from:Person)-[r]-(to:Person) 
+          MATCH (from)-[r]-(to:Person) 
           WHERE ID(from) = $id 
           RETURN r, to
          `,

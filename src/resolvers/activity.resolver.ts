@@ -12,31 +12,23 @@ import { Activity } from '../models/activity.model';
 import { Person } from '../models/person.model';
 import { Source } from '../models/source.model';
 import { GraphDBService } from '../graphDB.service';
+import { RelatedPerson } from '../models/relatedPerson.model';
 
 @Resolver(() => Activity)
 export class ActivityResolver {
   constructor(private prisma: PrismaService, private graphDB: GraphDBService) {}
 
-  // @Query(() => Activity)
-  // async activity(
-  //   @Args('id', { type: () => Int }) id: number,
-  // ): Promise<Activity> {
-  //   return this.prisma.activity.findUnique({
-  //     where: {
-  //       id: id,
-  //     },
-  //     include: {
-  //       source: true,
-  //     },
-  //   });
-  // }
-  //
   @Query(() => [Activity])
   async activities(
     @Args({ name: 'nameForSearch', nullable: true, type: () => String })
     nameForSearch: string,
   ): Promise<Activity[]> {
     return this.graphDB.getActivities(nameForSearch);
+  }
+
+  @ResolveField(() => [RelatedPerson])
+  async relatedPersons(@Parent() activity: Activity) {
+    return this.graphDB.getRelatedPersons(activity.id);
   }
 
   @Mutation(() => Activity)
